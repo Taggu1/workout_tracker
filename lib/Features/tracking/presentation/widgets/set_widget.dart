@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:workout_tracker/Features/tracking/data/Exercise.dart';
+import 'package:workout_tracker/Features/tracking/domain/Exercise.dart';
 import 'package:workout_tracker/Features/tracking/presentation/cubit/tracking_cubit.dart';
 
 import '../../../../Core/theme/palette.dart';
-import '../../data/Day.dart';
-import '../../data/Set.dart';
+import '../../domain/Day.dart';
+import '../../domain/Set.dart';
 
 class SetWidget extends StatefulWidget {
   final String? weight;

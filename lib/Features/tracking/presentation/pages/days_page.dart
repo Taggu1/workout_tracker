@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:workout_tracker/Features/tracking/data/Day.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:workout_tracker/Features/Templates/presentation/cubit/templates_cubit.dart';
+import 'package:workout_tracker/Features/Templates/presentation/pages/templates_page.dart';
 import 'package:workout_tracker/Features/tracking/presentation/cubit/tracking_cubit.dart';
-import 'package:workout_tracker/Features/tracking/presentation/widgets/add_exercise_button.dart';
 import 'package:workout_tracker/Features/tracking/presentation/widgets/day_widget.dart';
+import 'package:workout_tracker/Features/tracking/presentation/widgets/days_page_fab.dart';
 
 class DaysPage extends StatefulWidget {
   const DaysPage({super.key});
@@ -14,12 +16,24 @@ class DaysPage extends StatefulWidget {
 
 class _DaysPageState extends State<DaysPage> {
   @override
+  void initState() {
+    super.initState();
+    context.read<TrackingCubit>().getDaya();
+    context.read<TemplatesCubit>().getTemplates();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: AddButton(
-        onTap: () {
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: DaysPageFab(
+        onAddTapped: () {
           context.read<TrackingCubit>().addDay();
+        },
+        onTemplatesTapped: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => TemplatesPage(),
+          ));
         },
       ),
       body: BlocBuilder<TrackingCubit, TrackingState>(
@@ -32,8 +46,8 @@ class _DaysPageState extends State<DaysPage> {
               mainAxisSpacing: 10,
               children: state.days
                   .map(
-                    (day) => DayWidget(
-                      day: day,
+                    (eDay) => DayWidget(
+                      day: eDay,
                     ),
                   )
                   .toList(),

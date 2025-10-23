@@ -1,60 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isar/isar.dart';
+import 'package:workout_tracker/Features/tracking/presentation/cubit/tracking_cubit.dart';
 import 'package:workout_tracker/Features/tracking/presentation/widgets/set_widget.dart';
 
 import '../../../../Core/theme/palette.dart';
-import '../../data/Day.dart';
-import '../../data/Exercise.dart';
-import '../../data/Set.dart';
 
-class ExerciseSetsWidget extends StatefulWidget {
-  final List<ESet> sets;
-  final Day day;
-  final Exercise exercise;
+class ExerciseSetsWidget extends StatelessWidget {
+  final Id dayId;
+  final int index;
   const ExerciseSetsWidget(
-      {super.key,
-      required this.sets,
-      required this.day,
-      required this.exercise});
+      {super.key, required this.dayId, required this.index});
 
-  @override
-  State<ExerciseSetsWidget> createState() => _ExerciseSetsWidgetState();
-}
-
-class _ExerciseSetsWidgetState extends State<ExerciseSetsWidget> {
   @override
   Widget build(BuildContext context) {
-    final setsWidgets = widget.sets
-        .map(
-          (eSet) => WidgetSpan(
-            child: SetWidget(
-              day: widget.day,
-              exercise: widget.exercise,
-              eSet: eSet,
-            ),
-          ),
-        )
-        .toList();
+    return BlocBuilder<TrackingCubit, TrackingState>(
+      builder: (context, state) {
+        final day = state.days.firstWhere(
+          (currentDay) => currentDay.id == dayId,
+        );
 
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(color: Mocha.text, fontSize: 14),
-        children: [
-          ...setsWidgets,
-          WidgetSpan(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  widget.sets.add(ESet(number: 0, weight: 0, reps: 1));
-                });
-              },
-              child: Icon(
-                Icons.add,
-                size: 19,
+        final setsWidgets = day.exercises[index].sets!
+            .map(
+              (eSet) => WidgetSpan(
+                child: SetWidget(
+                  day: day,
+                  exercise: day.exercises[index],
+                  eSet: eSet,
+                ),
               ),
-            ),
+            )
+            .toList();
+        return RichText(
+          text: TextSpan(
+            style: TextStyle(color: Mocha.text, fontSize: 14),
+            children: [
+              ...setsWidgets,
+              WidgetSpan(
+                child: GestureDetector(
+                  onTap: () {
+                    context
+                        .read<TrackingCubit>()
+                        .addSet(day, day.exercises[index]);
+                  },
+                  child: Icon(
+                    Icons.add,
+                    size: 19,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
